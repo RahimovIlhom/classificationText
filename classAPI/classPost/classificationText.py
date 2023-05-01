@@ -1,11 +1,17 @@
 import os
-
+import re
+import time
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.linear_model import LogisticRegression
 
+additions = ['gacha', 'tacha', 'siz', 'sizlar', 'gan', 'dagi', 'ning', 'ni',
+             'ga', 'da', 'dan', 'cha', 'oq', 'dek', 'la', 'qa', 'ta', 'chi', 'li', 'si',
+             'ki', 'gi', 'ti', "g'i", 'i', 'im']
+
 file_path = os.path.join(os.getcwd(), 'classAPI', 'classPost', 'classWords.csv')
+
 
 def checkText(text: str, dataFile: str = file_path) -> dict:
     # Load the data into a Pandas dataframe
@@ -34,10 +40,21 @@ def checkText(text: str, dataFile: str = file_path) -> dict:
 
     # Evaluate the model on the testing data
     accuracy = classifier.score(test_features, test_labels)
-    print("Accuracy:", accuracy)
+    print("Aniqlik:", accuracy)
+
+    # Remove attachments
+    clean_text = re.sub(r'[^\w\s\']+', '', text)
+    words = clean_text.split()
+    for word in words:
+        for addition in additions:
+            if word.endswith(addition):
+                word = word.replace(addition, '')
+                clean_text = clean_text + " " + word
+
+    print(clean_text)
 
     # Use the model to predict the label of a new text input
-    new_text = [text.lower().replace('[^a-zA-Z\s]', '')]
+    new_text = [clean_text.lower().replace('[^a-zA-Z\s]', '')]
     new_features = vectorizer.transform(new_text)
     predicted_label = classifier.predict(new_features)[0]
     return {"text": new_text[0], "label": predicted_label}
