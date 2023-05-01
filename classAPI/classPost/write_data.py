@@ -1,16 +1,50 @@
 import csv
+import json
+from pprint import pprint
 
-# faylga yozish uchun namuna ma'lumotlari
-data = [['Hello', 'World'], ['Python', 'Programming'], ['Uzbek', 'Language'], ['Bu mening sevimli kitobim', 'Adabiyot']]
-data = [(text[0].lower(), text[1].lower()) for text in data]
+try:
+    with open('fields.txt', 'r') as f:
+        data = f.read().lower()
+        fields = data.split()
+except:
+    with open('fields.txt', 'w') as f:
+        fields = []
+print(fields)
+datadict = {}
+
+for index in range(len(fields)):
+    try:
+        with open(f'words/{fields[index]}.json', 'r') as f:
+            data = json.loads(f.read())
+            texts = []
+            for text in data:
+                if text and text != '---':
+                    texts.append(text.lower().strip())
+                    if '’' in text:
+                        texts.append(text.replace('’', '\''))
+                    elif '‘' in text:
+                        texts.append(text.replace('‘', '\''))
+                    elif 'ʻ' in text:
+                        texts.append(text.replace('ʻ', '\''))
+                    elif '"' in text:
+                        texts.append(text.replace('"', ""))
+                    elif '\n' in text:
+                        texts.append(text.replace('\n', " "))
+            datadict[f'{fields[index].lower().strip()}'] = texts
+    except:
+        with open(f'words/{fields[index]}.json', 'w') as f:
+            f.write(json.dumps([]))
+pprint(datadict)
+
 
 # CSV faylini yozish rejimida ochish
-with open('classWords.csv', mode='w', newline='') as file:
+with open('classWords.csv', mode='w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
 
     # sarlavhani yozish
     writer.writerow(['text', 'label'])
 
     # ma'lumotlarni qatorma-qator yozish
-    for row in data:
-        writer.writerow(row)
+    for key, values in datadict.items():
+        for value in values:
+            writer.writerow([value, key])
