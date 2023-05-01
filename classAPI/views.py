@@ -67,7 +67,13 @@ class PostViewSet(viewsets.ViewSet):
         if serializer.is_valid():
             serializer.save()
             postNew.body = serializer.validated_data['body']
-            field = checkText(postNew.body.lower())['label']
+            postNew.title = serializer.validated_data['title']
+            try:
+                postNew.summary = serializer.validated_data['summary']
+                text = postNew.body + postNew.title + postNew.summary
+            except:
+                text = postNew.body + postNew.title
+            field = checkText(text.lower())['label']
             print(field)
             field_id = None
             for soha in fields:
@@ -75,7 +81,8 @@ class PostViewSet(viewsets.ViewSet):
                     field_id = soha.id
                     break
             if field_id is None:
-                return Response({"detail": "Bu post bazadagi sohalarga tegishli emas."}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"detail": "Bu post bazadagi sohalarga tegishli emas."},
+                                status=status.HTTP_400_BAD_REQUEST)
             postNew.field_id = field_id
             postNew.save()
             serializer = PostSerializers(postNew, context=self.get_serializers_context())

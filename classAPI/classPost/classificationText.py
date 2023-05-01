@@ -8,35 +8,35 @@ from sklearn.linear_model import LogisticRegression
 file_path = os.path.join(os.getcwd(), 'classAPI', 'classPost', 'classWords.csv')
 
 def checkText(text: str, dataFile: str = file_path) -> dict:
-    # Ma'lumotlarni Pandas dataframe-ga yuklash
-    data = pd.read_csv(dataFile)
+    # Load the data into a Pandas dataframe
+    data = pd.read_csv(f'{dataFile}')
 
-    # Ma'lumotlarni ko'paytirish
+    # Augment the data
     data = pd.concat([data, data.sample(frac=0.5, random_state=42)], ignore_index=True)
 
-    # Yo'qolgan qiymatlarni to'ldirish
+    # Fill in missing values
     data = data.fillna('')
 
-    # Ma'lumotlarni tozalash
+    # Clean the data
     data['text'] = data['text'].str.replace('[^a-zA-Z\s]', '').str.lower()
 
-    # Ma'lumotlarni normallashtirish
+    # Normalize the data
     vectorizer = CountVectorizer()
     features = vectorizer.fit_transform(data['text'])
 
-    # Ma'lumotlarni o'quv va sinov to'plamlariga bo'lish
+    # Split the data into training and testing sets
     train_features, test_features, train_labels, test_labels = train_test_split(features, data['label'], test_size=0.2,
                                                                                 random_state=42)
 
-    # Trening ma'lumotlariga logistik regressiya modelini o'rgatish
+    # Train a logistic regression model on the training data
     classifier = LogisticRegression()
     classifier.fit(train_features, train_labels)
 
-    # Sinov ma'lumotlari bo'yicha modelni baholash
+    # Evaluate the model on the testing data
     accuracy = classifier.score(test_features, test_labels)
     print("Accuracy:", accuracy)
 
-    # Yangi matn kiritish yorlig'ini bashorat qilish uchun modeldan foydalanish
+    # Use the model to predict the label of a new text input
     new_text = [text.lower().replace('[^a-zA-Z\s]', '')]
     new_features = vectorizer.transform(new_text)
     predicted_label = classifier.predict(new_features)[0]
