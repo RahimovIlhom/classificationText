@@ -8,7 +8,6 @@ numpy~=1.24.3
 # tensorflow~=2.12.0
 dj-rest-auth~=3.0.0
 django-allauth~=0.54.0
-django-cors-headers~=3.14.0
 environs~=9.5.0
 psycopg2-binary~=2.9.6
 whitenoise==6.4.0

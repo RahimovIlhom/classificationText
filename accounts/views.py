@@ -47,4 +47,11 @@ class CustomRegisterView(RegisterView):
             }
             response.data = data
             return response
+        elif response.status_code == status.HTTP_204_NO_CONTENT:
+            data = {
+                "success": "User registered successfully",
+                "login": reverse_lazy("rest_login"),
+            }
+            response.data = data
+            return response
         return Response(response.data, status=response.status_code)
