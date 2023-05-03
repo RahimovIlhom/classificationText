@@ -70,9 +70,9 @@ class PostViewSet(viewsets.ViewSet):
             postNew.title = serializer.validated_data['title']
             try:
                 postNew.summary = serializer.validated_data['summary']
-                text = postNew.body + postNew.title + postNew.summary
+                text = postNew.body + " " + postNew.title + " " + postNew.summary
             except:
-                text = postNew.body + postNew.title
+                text = postNew.body + " " + postNew.title
             field = checkText(text.lower())['label']
             print(field)
             field_id = None
