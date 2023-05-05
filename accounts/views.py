@@ -1,10 +1,12 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from accounts.pagination import CustomPagination
 from accounts.serializers import UserSerializer
-from rest_framework import viewsets, generics, status
+from rest_framework import viewsets, generics, status, views
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
@@ -38,6 +40,7 @@ class UserViewSet(viewsets.ViewSet):
 
 
 class CustomRegisterView(RegisterView):
+    @method_decorator(ensure_csrf_cookie, csrf_protect)
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         if response.status_code == status.HTTP_201_CREATED:
