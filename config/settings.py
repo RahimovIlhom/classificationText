@@ -32,6 +32,15 @@ DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = ['.up.railway.app', '.pythonanywhere.com', 'localhost', '127.0.0.1']
 
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://ravshan-blog.up.railway.app/',
+    'http://127.0.0.1:8000/'
+]
+
 
 # Application definition
 
